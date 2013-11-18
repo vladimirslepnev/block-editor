@@ -1,0 +1,144 @@
+<html>
+<head>
+	<title>Block editor</title>
+
+	<script src="three.min.js"></script>
+	<script src="http://mrdoob.github.com/three.js/examples/js/shaders/CopyShader.js"></script>
+	<script src="http://mrdoob.github.com/three.js/examples/js/shaders/SSAOShader.js"></script>	
+	<script src="http://mrdoob.github.com/three.js/examples/js/shaders/FXAAShader.js"></script>	
+	<script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/EffectComposer.js"></script>
+	<script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/RenderPass.js"></script>
+	<script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/MaskPass.js"></script>
+	<script src="http://mrdoob.github.com/three.js/examples/js/postprocessing/ShaderPass.js"></script>
+	
+	<script src="GeometryUtils.js"></script>
+	<script src="TexturePacker.js"></script>
+	<script src="GeometryPacker.js"></script>
+	<script src="editor.js"></script>
+
+	<style>
+	
+	body {
+		border: 0;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+	}
+
+	#tools {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 240px;
+		height: 100%;
+		padding: 0 20px;
+		z-index: 1;
+		overflow-y: scroll;
+	}
+
+	#toolsBackground {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 200%;
+		background-color: #e0e0e0;
+		z-index: -1;
+		opacity: 0.7;
+	}
+
+	#tools h3 {
+		margin-top: 20px;
+		margin-bottom: 10px;
+	}
+
+	#tools h3:first-child {
+		margin-top: 15px;
+	}
+
+	#tools label {
+		cursor: pointer;
+	}
+
+	#tileLinks {
+		padding-bottom: 20px;
+	}
+
+	#tileLinks a {
+		display: block;
+	}
+
+	#tileLinks a, #tileLinks div {
+		padding: 3px 5px;
+		margin-left: -5px;
+	}
+
+	#tileLinks .selected {
+		background-color: white;
+	}
+
+	button {
+		font-size: 13px;
+		width: 70px;
+	}
+
+	#editWindow {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	.color {
+		display: inline-block;
+		width: 20px;
+		height: 20px;
+		margin: 0 1px 0 0;
+		cursor: pointer;
+	}
+		
+	.color.selected {
+		width: 26px;
+		height: 26px;
+		margin-bottom: -3px;
+	}
+		
+	#colorInput {
+	    position: absolute;
+	    left: -9999px;
+	    top: -9999px;
+	}
+	
+	</style>
+</head>
+<body onload="start()">
+	<div id="tools">
+		<div id="toolsBackground"></div>
+		<h3>Tools</h3>
+		<input type="radio" name="tool" value="remove" id="toolRemove" checked></input>
+		<label for="toolRemove"><u>R</u>emove cubes</label>
+		<br>
+		<input type="radio" name="tool" value="add" id="toolAdd"></input>
+		<label for="toolAdd"><u>A</u>dd cubes</label>
+		<br>
+		<input type="radio" name="tool" value="color" id="toolColor"></input>
+		<label for="toolColor"><u>C</u>olor faces</label>
+		<br>
+		<h3>Colors</h3>
+		<div id="colors"></div>
+		<h3>Actions</h3>
+		<button id="actionNew">New</button>
+		<button id="actionUndo" disabled>Undo</button>
+		<button id="actionRedo" disabled>Redo</button>
+		<button id="actionSave">Save as</button>
+		<button id="actionRename" disabled>Rename</button>
+		<button id="actionDelete">Delete</button>
+		<h3>Blocks</h3>
+		<div id="tileLinks"></div>
+	</div>
+	<div id="editWindow" onmousedown="return false;" onmousewheel="return false;">
+	</div>
+	<input type="color" id="colorInput"></input>
+</body>
+</html>
