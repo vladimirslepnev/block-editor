@@ -148,6 +148,7 @@ cameraPosition.initialize = function() {
 	this.value = new THREE.PerspectiveCamera(
 		30, window.innerWidth / window.innerHeight, 1, 1000
 	);
+  console.log(this.value);
 	recalculate();	
 }
 
@@ -330,7 +331,7 @@ colorMapDisplay.update = function() {
 				if (colorMap.value.selectedIndex == i) {
 					var colorInput = document.getElementById("colorInput");
 					colorInput.value = toHTMLColor(colorMap.value.colors[i]);
-					colorInput.onchange = function() {
+					colorInput.oninput = function() {
 						colorMap.value.colors[i] = parseInt(colorInput.value.substring(1), 16);
 						colorMap.onChange();
 					}
@@ -483,7 +484,7 @@ renderedView.initialize = function() {
 	this.scene = new THREE.Scene();
 	this.scene.add(cameraPosition.value);
 	var renderer = new THREE.WebGLRenderer({ antialias: false });
-	renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.devicePixelRatio = 1;
 	renderer.setClearColor(0xffffff, 1);
 	document.getElementById("editWindow").appendChild(renderer.domElement);
 	this.scene.add(new THREE.AmbientLight(0xc0c0c0));
@@ -494,11 +495,18 @@ renderedView.initialize = function() {
 	
 	var renderModel = new THREE.RenderPass(this.scene, cameraPosition.value);
 	var fxaa = new THREE.ShaderPass(THREE.FXAAShader);
-	fxaa.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
 	fxaa.renderToScreen = true;
 	var composer = new THREE.EffectComposer(renderer);
 	composer.addPass(renderModel);
 	composer.addPass(fxaa);
+  var resizeCallback = function() {
+  	renderer.setSize(window.innerWidth, window.innerHeight);
+  	fxaa.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight);
+    cameraPosition.value.aspect = window.innerWidth / window.innerHeight;
+    cameraPosition.value.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resizeCallback);
+  resizeCallback();
 	
 	var animate = function() {
 		cameraPosition.value.updateMatrixWorld();
